@@ -14,3 +14,17 @@ signal <- function(DEG,logFC=1,adj.P.Val=0.05){
  print(table(DEG$Signal))
  return(DEG)
 }
+convertgene <- function(x,from_org = "mmusculus",to_org = "hsapiens"){
+  if (!require("BiocManager"))install.packages("BiocManager")
+  if (!require(biomaRt))BiocManager::install("biomaRt")
+  library(biomaRt)
+  org1 = useMart('ensembl',dataset = paste(from_org,"_gene_ensembl",sep = ""))
+  org2 = useMart('ensembl',dataset = paste(to_org,"_gene_ensembl",sep = ""))
+  m2h.g <- getLDS(attributes = c("mgi_symbol"),filters = "mgi_symbol",
+                  values = x,mart = org1,
+                  attributesL = c("hgnc_symbol","chromosome_name","start_position"),
+                  martL = org2,
+                  uniqueRows = T)
+  return(m2h.g)
+  
+}
